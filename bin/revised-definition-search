@@ -1,0 +1,39 @@
+#!/usr/bin/env perl
+use v5.16;
+use ElasticSearch;
+use Text::Autoformat qw(autoformat);
+
+my $q = shift(@ARGV) || die "no q";
+
+utf8::decode($q);
+
+my $es = ElasticSearch->new();
+
+my $res = $es->search(
+    index => "moedict",
+    type  => "revised",
+    query => {
+        text => {
+            def   => $q
+        }
+    },
+    size => 5
+);
+
+# use JSON;
+# say JSON->new->pretty->encode($res);
+
+binmode STDOUT, ":utf8";
+
+say "Totally $res->{hits}{total} hits";
+
+for (@{ $res->{hits}{hits} }) {
+    my $x = $_->{_source};
+    say "\n# $x->{title}";
+    say "  _id: $_->{_id}";
+    for (@{$x->{heteronyms}[0]{definitions}}) {
+        say "  $_->{def}";
+    }
+}
+
+say ""
