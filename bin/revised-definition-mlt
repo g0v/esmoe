@@ -1,0 +1,27 @@
+#!/usr/bin/env perl
+use v5.16;
+use ElasticSearch;
+
+my $id = shift(@ARGV) or die "no id?";
+
+my $es = ElasticSearch->new();
+
+my $res = $es->mlt(
+    index => "moedict",
+    type => "revised",
+    id   => $id,
+);
+binmode STDOUT, ":utf8";
+
+say "Totally $res->{hits}{total} hits";
+
+for (@{ $res->{hits}{hits} }) {
+    my $x = $_->{_source};
+    say "\n# $x->{title}";
+    say "  _id: $_->{_id}";
+    for (@{$x->{heteronyms}[0]{definitions}}) {
+        say "  - $_->{def}";
+    }
+}
+
+say ""
