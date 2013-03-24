@@ -1,39 +1,11 @@
 #!/usr/bin/env perl
 use v5.16;
-use ElasticSearch;
-use Text::Autoformat qw(autoformat);
-
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use Esmoe;
 my $q = shift(@ARGV) || die "no q";
 
-utf8::decode($q);
-
-my $es = ElasticSearch->new();
-
-my $res = $es->search(
-    index => "moedict",
-    type  => "revised",
-    query => {
-        text => {
-            def   => $q
-        }
-    },
-    size => 5
-);
-
-# use JSON;
-# say JSON->new->pretty->encode($res);
-
+utf8::decode($q) unless utf8::is_utf8($q);
 binmode STDOUT, ":utf8";
+Esmoe->search_definitons($q)->print;
 
-say "Totally $res->{hits}{total} hits";
-
-for (@{ $res->{hits}{hits} }) {
-    my $x = $_->{_source};
-    say "\n# $x->{title}";
-    say "  _id: $_->{_id}";
-    for (@{$x->{heteronyms}[0]{definitions}}) {
-        say "  $_->{def}";
-    }
-}
-
-say ""
