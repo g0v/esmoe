@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+use v5.16;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use Esmoe;
+
+my $id = shift(@ARGV) || die "no id";
+binmode STDOUT, ":utf8";
+
+my $es = Esmoe::ES->new;
+my $result = $es->get(id => $id);
+
+my $title = $result->results->{_source}{title};
+
+say "Search with $title";
+
+$es->search(
+    queryb => {
+        def => $title
+    }
+)->print;
+
