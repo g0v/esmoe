@@ -1,0 +1,35 @@
+#!/usr/bin/env perl
+use v5.16;
+
+use File::Slurp qw(read_file);
+use ElasticSearch;
+use JSON;
+
+my $json_text = read_file("data/moedict-data/dict-revised.json", { binmode => ":utf8" });
+
+my $json_decoder = JSON->new;
+my $dict_revised = $json_decoder->decode($json_text);
+
+for (@$dict_revised) {
+    es_index($_);
+}
+es_index(undef);
+
+sub es_index {
+    state $es = ElasticSearch->new;
+    state $buffered = [];
+
+    my $doc = shift;
+    if (!defined($doc) || @$buffered > 10) {
+        $es->bulk(
+            index => "moedict",
+            type => "revised",
+            actions => [
+                map { { index => { data => $_ } } } @$buffered
+            ]
+        );
+
+        @$buffered = ();
+    }
+    push @$buffered, $doc;
+}
