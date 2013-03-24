@@ -8,6 +8,13 @@ sub mlt {
     return Esmoe::ES->new()->mlt( id => $id );
 }
 
+sub search_title {
+    my ($class, $q) = @_;
+    return Esmoe::ES->new->search(
+        query => { text => { title => $q } },
+    );
+}
+
 sub search_definitons {
     my ($class, $q) = @_;
     return Esmoe::ES->new()->search(
