@@ -11,11 +11,11 @@ has results => (
 method print {
     my $res = $self->results;
 
-    say "Totally $res->{hits}{total} hits";
+    say "$res->{hits}{total} hits in total...";
 
     for (@{ $res->{hits}{hits} }) {
         my $x = $_->{_source};
-        say "# $_->{_id} $x->{title}";
+        say "$_->{_id} : $x->{title}";
         for (@{$x->{heteronyms}[0]{definitions}}) {
             say "    - $_->{def}";
         }
