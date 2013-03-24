@@ -4,9 +4,9 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Esmoe;
 
-my $q = shift(@ARGV) || die "no q";
-utf8::decode($q) unless utf8::is_utf8($q);
+my $id = shift(@ARGV) || die "no id";
+utf8::decode($id) unless utf8::is_utf8($id);
 
 binmode STDOUT, ":utf8";
 
-Esmoe->search_title($q)->print;
+Esmoe::ES->new->get(id => $id)->print;

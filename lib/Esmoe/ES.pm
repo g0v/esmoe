@@ -14,7 +14,7 @@ sub BUILD {
     return $self;
 }
 
-around qw<mlt search> => sub {
+around qw<get mlt search> => sub {
     my ($orig, $self, @args) = @_;
     unshift @args, (
         index => "moedict",

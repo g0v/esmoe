@@ -26,6 +26,10 @@ method print {
             }
         }
     }
+    elsif (exists($res->{_source})) {
+        require YAML;
+        print YAML::Dump($res->{_source});
+    }
 }
 
 1;
