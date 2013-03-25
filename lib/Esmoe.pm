@@ -22,4 +22,11 @@ sub search_definitons {
     );
 }
 
+sub search_examples {
+    my ($class, $q) = @_;
+    return Esmoe::ES->new()->search(
+        query => { text => { example => $q } },
+    );
+}
+
 1;

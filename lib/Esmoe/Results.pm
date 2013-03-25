@@ -23,6 +23,7 @@ method print {
             say "$_->{_id} : $x->{title}";
             for (@{$x->{heteronyms}[0]{definitions}}) {
                 say "    - $_->{def}";
+                say "      $_" for @{$_->{example}};
             }
         }
     }
