@@ -29,4 +29,11 @@ sub search_examples {
     );
 }
 
+sub search_quotes {
+    my ($class, $q) = @_;
+    return Esmoe::ES->new->search(
+        query => { text => { quote => $q } },
+    );
+}
+
 1;
