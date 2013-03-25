@@ -17,7 +17,9 @@ eval {
     # nothing
 };
 
-my $json_text = read_file("data/moedict-data/dict-revised.json", { binmode => ":utf8" });
+my $json_file = shift(@ARGV) || die "$0 </path/to/dict-revised.json>\n";
+
+my $json_text = read_file($json_file, { binmode => ":utf8" });
 
 my $json_decoder = JSON->new;
 my $dict_revised = $json_decoder->decode($json_text);
