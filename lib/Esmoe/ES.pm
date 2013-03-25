@@ -16,9 +16,10 @@ sub BUILD {
 
 around qw<get mlt search> => sub {
     my ($orig, $self, @args) = @_;
-    unshift @args, (
+    push @args, (
         index => "moedict",
-        type  => "revised"
+        type  => "revised",
+        size  => 5
     );
 
     return Esmoe::Results->new(results => $self->$orig(@args));

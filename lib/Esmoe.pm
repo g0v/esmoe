@@ -11,7 +11,7 @@ sub mlt {
 sub search_title {
     my ($class, $q) = @_;
     return Esmoe::ES->new->search(
-        query => { text => { title => $q } },
+        query => { text_phrase => { title => $q } },
     );
 }
 
