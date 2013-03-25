@@ -1,9 +1,21 @@
 #!/usr/bin/env perl
 use v5.16;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
 
 use File::Slurp qw(read_file);
-use ElasticSearch;
 use JSON;
+use Esmoe::ES;
+
+my $ES_TRANSPORT = "httptiny";
+
+eval {
+    require ElasticSearch::Transport::Curl;
+    $ES_TRANSPORT = "curl";
+    1;
+} or do {
+    # nothing
+};
 
 my $json_text = read_file("data/moedict-data/dict-revised.json", { binmode => ":utf8" });
 
@@ -16,12 +28,12 @@ for (@$dict_revised) {
 es_index(undef);
 
 sub es_index {
-    state $es = ElasticSearch->new;
+    state $es = Esmoe::ES->new( transport => $ES_TRANSPORT );
     state $buffered = [];
     state $id = 1;
 
     my $doc = shift;
-    if (!defined($doc) || @$buffered > 10) {
+    if (!defined($doc) || @$buffered > 1000) {
         $es->bulk(
             index => "moedict",
             type => "revised",
