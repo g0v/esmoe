@@ -30,9 +30,32 @@ for (@$dict_revised) {
 es_index(undef);
 
 sub es_index {
-    state $es = Esmoe::ES->new( transport => $ES_TRANSPORT );
+    state $es = Esmoe::ES->new( no_refresh => 1, transport => $ES_TRANSPORT );
     state $buffered = [];
     state $id = 1;
+
+    unless ($es->index_exists(index => "moedict")) {
+        $es->create_index(
+            index => "moedict",
+            settings => {
+                index => {
+                    number_of_replicas => 0
+                }
+            },
+            mappings => {
+                revised => {
+                    _id => {
+                        path => "title"
+                    },
+                    properties => {
+                        title        => { type => "string",  index => "not_analyzed" },
+                        radical      => { type => "string",  index => "not_analyzed" },
+                        stroke_count => { type => "integer" },
+                    }
+                }
+            }
+        );
+    }
 
     my $doc = shift;
     if (!defined($doc) || @$buffered > 1000) {
@@ -43,7 +66,6 @@ sub es_index {
                 map {
                     +{
                         index => {
-                            id   => $id++,
                             data => $_
                         }
                     }
