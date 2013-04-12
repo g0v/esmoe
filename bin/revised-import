@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-use v5.16;
+use v5.14;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
